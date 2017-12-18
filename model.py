@@ -10,14 +10,18 @@ class BowModel(nn.Module):
         n_embedding, dim = emb_tensor.size()
         self.embedding = nn.Embedding(n_embedding, dim, padding_idx=0)
         self.embedding.weight = Parameter(emb_tensor, requires_grad=False)
-        self.out = nn.Linear(dim, 2)
+        self.out = nn.Linear(dim, 2) # dim = 300
 
     def forward(self, input):
         '''
-        input is a [batch_size, sentence_length] tensor with a list of token IDs
+        input is a [1, sentence_length] tensor with a list of token IDs
         '''
-        embedded = self.embedding(input)
+        embedded = self.embedding(input) # size [1, sentence_length, dim]
         # Here we take into account only the first word of the sentence
         # You should change it, e.g. by taking the average of the words of the sentence
-        bow = embedded[:, 0]
-        return F.log_softmax(self.out(bow))
+
+        bow = embedded.mean(dim=1)
+        # TODO use frequency
+        # use RNN, LSTM
+
+        return F.log_softmax(self.out(bow)) # [1, 2]

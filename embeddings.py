@@ -66,6 +66,11 @@ class EmbeddingsDictionary:
         Output: a tuple (score, index), with score a FloatTensor of shape
         [top_k] and index a LongTensor of shape [top_k] that maps to an index
         in self.words.
+        self.emb : [n_words, dim]
+        query_embedding: [dim] => [dim, 1]
+        torch.mm(.., ..): [n_words, 1]
+        squeeze: [n_words]
+        topk: [top_k]
         '''
         return torch.mm(self.emb, query_embedding.unsqueeze(1)).squeeze(1).topk(k=top_k)
 
@@ -80,3 +85,18 @@ class EmbeddingsDictionary:
         _, neighbor_ids = self.emb2neighbors(self.emb[query_id], top_k + 1)
         neighbor_words = [self.words[i] for i in neighbor_ids if i != query_id]
         return neighbor_words
+
+    def analogy(self, word1, word2, word3):
+        """
+        Retrive word closest to word1 + word2 - word3
+        """
+        ind1 = self.dictionary[word1]
+        ind2 = self.dictionary[word2]
+        ind3 = self.dictionary[word3]
+
+        target_embeding = self.emb[ind1] + self.emb[ind2] - self.emb[ind3]
+        _scores, closest_word_index = self.emb2neighbors(target_embeding, top_k=20)
+        for index in closest_word_index:
+            print(self.words[index])
+
+

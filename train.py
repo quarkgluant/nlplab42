@@ -22,7 +22,7 @@ logger.addHandler(console)
 # Here we load only a small chunk of the embeddings (100k most common words)
 # You can change it if you want
 all_words = set(line.strip() for line in open('all_sst_words.txt'))
-emb_dict = EmbeddingsDictionary(word_whitelist=all_words)
+emb_dict = EmbeddingsDictionary(word_whitelist=all_words, path='data/wiki-news-300d-1M.vec')# emb_dict = EmbeddingsDictionary(word_whitelist=all_words)
 
 data = SifDataset()
 train_exs, train_labels = dataset.preprocess_dataset(data.train, emb_dict.dictionary)
